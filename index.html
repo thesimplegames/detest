@@ -47,20 +47,23 @@
 				async		: true,
 				cache		: false,
 				timeout		: 10000,
+//				headers: {'X-Requested-With': 'XMLHttpRequest'},
+				headers: {'Origin': 'http://clinic.dentexpert.net/'},
 				success    : function(response) {
 					res = response;
 					if (res == '404' || res == '405') {
-						alert("404.405")
+						//alert("404.405")
 						res = "error"; 
 					} else if (callback) {
-						alert("!");
-						alert(res);
+						//alert("!");
+						//alert(res);
 						callback(res);
 					}
 					
 				},
 				error      : function (xhr, ajaxOptions, thrownError) {
-					alert("ajax error");
+				//debugger;
+					alert(thrownError);
 				  //debugger;
 				}
 			});  
@@ -135,7 +138,7 @@
 		  <h3 for="usr" style ="color: white;">Введите код:</h3>
 		  <input type="text" class="form-control" id="login" value="12345" name="ncl" required autofocus pattern="^[ 0-9]+$">
 		</div>
-	  <button type="submit" id="SubmitButton" class="btn btn-success">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Перейти &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+	  <button type="button" id="SubmitButton" class="btn btn-success">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Перейти &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
 <!--	  <button type="submit"  class="btn btn-default" onClick="AddCookie($('#login').val())">Submit</button> -->
 	  </form>
 	</div>
