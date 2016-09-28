@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html> 
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        
+		<!--
+		<meta http-equiv="Content-Security-Policy" content="default-src * data: gap: https://ssl.gstatic.com 'unsafe-eval'; 
+		style-src 'self' 'unsafe-inline'; media-src *">
+		-->
+		
+<meta http-equiv="Content-Security-Policy" 
+          content="default-src *; 
+                   style-src 'self' 'unsafe-inline' 'unsafe-eval'; 
+                   script-src 'self' 'unsafe-inline' 'unsafe-eval';">
+
+
+		<link rel="stylesheet" href="js/bootstrap.min.css">
+		<script type="text/javascript" src="js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<script type="text/javascript" src="js/jquery.cookie.js"></script>
+
+		<scriptt type="text/javascript" src="cordova.js"></scriptt>
+
+		<!--[if lte IE 9]>
+		<script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.3/jquery.xdomainrequest.min.js'></script>
+		<![endif]-->		
+		
+        <title>DentExpert</title>
+    </head>
+	
+<body style ="background-color: #286090;">
+<center>
+	<script type="text/javascript">
+		jQuery.support.cors = true;
+		
+		function GetClinicName (code, callback) {
+			var res = "";
+			$.ajax({
+				type       : "GET",
+				url        : "../regclinic.php",
+				crossDomain: true,
+				data       : {ncl : code},
+				dataType   : 'text',
+				async		: true,
+				cache		: false,
+				timeout		: 10000,
+				success    : function(response) {
+					res = response;
+					if (res == '404' || res == '405') {
+						//alert("404.405")
+						res = "error"; 
+					} else if (callback) {
+						//alert("!");
+						//alert(res);
+						callback(res);
+					}
+					
+				},
+				error      : function (xhr, ajaxOptions, thrownError) {
+					alert("ajax error");
+				  //debugger;
+				}
+			});  
+			return res;
+		}
+		
+	
+		function getCookie(name) {
+			var matches = document.cookie.match(new RegExp(
+			"(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+			));
+
+			return matches ? decodeURIComponent(matches[1]) : undefined;
+		}
+
+		function getUrlVars() {
+			var vars = {};
+			var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+				vars[key] = value;
+				});
+			return vars;
+		}
+
+		function AddCookie(code) {
+			var storedArr = [];
+			if ($.cookie('nclArr') == null) {
+				var newArr = [code];
+				$.cookie('nclArr', JSON.stringify(newArr));
+			}
+
+			storedArr = JSON.parse($.cookie('nclArr'));
+			var containsCode = false;
+			for (var i = 0; i < storedArr.length; i++) {
+				if (storedArr[i] == code) {
+					containsCode = true;
+					//debugger;
+				}
+			}
+			
+			if (!containsCode) {
+				storedArr.push(code);
+			}
+			$.cookie('nclArr', JSON.stringify(storedArr));
+
+			//alert(code);
+			window.open(''.concat("../index2.php?ncl=" + code), '_blank');
+		}
+		
+		function RemoveCookie(code) {
+			var storedArr = [];
+
+			storedArr = JSON.parse($.cookie('nclArr'));
+			for (var i = 0; i < storedArr.length; i++) {
+				if (storedArr[i] == code) {
+					storedArr.splice(i, 1);
+					$.cookie('nclArr', JSON.stringify(storedArr));
+					break;
+				}
+			}
+		}
+		
+		function BtnClick() {
+			GetClinicName($('#login').val(), function () { AddCookie($('#login').val());});
+		}
+	</script>
+<br><br>
+	<div class="container">
+	  <h1 style ="color: white;">Клиники DentExpert</h1>
+	  <!-- <form role="form"  method="get" action="index.html"> -->
+	  <form role="form"  method="post" action="#">
+		<div class="form-group">
+		  <h3 for="usr" style ="color: white;">Введите код:</h3>
+		  <input type="text" class="form-control" id="login" value="12345" name="ncl" required autofocus pattern="^[ 0-9]+$">
+		</div>
+	  <!--<button type="submit" id="SubmitButton" class="btn btn-success">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Перейти &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>-->
+	  <button type="submit"  class="btn btn-default" onClick="AddCookie($('#login').val());">Submit</button> 
+	  </form>
+	</div>
+
+	<br><br><br>
+
+	<script type="text/javascript">
+
+	
+	//document.getElementById("SubmitButton").addEventListener("click", BtnClick);
+	
+		var removeMode = false;
+		var storedArr = [];
+		if ($.cookie('nclArr') != null) {
+			storedArr = JSON.parse($.cookie('nclArr'));
+		}
+		 
+		if (storedArr.length > 0) {
+			document.write('\
+					<div class="container">\
+					<div class="list-group">'
+				);
+			
+			function Iterator (i) {
+				if (storedArr[i] != null) {
+					document.write('\
+						<a onClick="goAway(' + storedArr[i] +')" class="list-group-item" id="awayLink' + storedArr[i].toString() + '" style ="background-color: #668cff;">\
+						  <h3 class="list-group-item-heading" style = "color: white;"  id="h3' + i +'">' + storedArr[i] + '</h3>\
+						</a>');
+						
+					GetClinicName(storedArr[i], function (data) {$("#h3" + i.toString()).text(data);} );
+				}			
+			}
+
+			for (var i = 0; i < storedArr.length; i++) {
+				Iterator(i);
+			}
+				/*
+			document.write('\
+				<br>\
+				<button class="btn btn-warning" onClick="javascript: $.cookie(\'nclArr\', JSON.stringify([]));\
+						location.reload();">Удалить клинику</button>\
+					</div>\
+				</div>');
+				*/
+			document.write('\
+				<br>\
+				<button class="btn btn-warning" id="RemoveButton" onClick="OnRemoveButtonClick()">Удалить клинику</button>\
+					</div>\
+				</div>');
+				
+			function OnRemoveButtonClick () {
+				removeMode = !removeMode; 
+				$("a").css("background-color", "red");
+				
+				if (removeMode) {
+					$("#RemoveButton").text("Я передумал, не удалять");
+				} else {
+					$("a").css("background-color", "#668cff");
+					$("#RemoveButton").text("Удалить клинику");
+				}
+			}	
+				
+			function goAway(code) {
+				if (removeMode) {
+					RemoveCookie(code);
+					$("#awayLink" + code.toString()).remove();
+					OnRemoveButtonClick();
+				} else {
+					$("#login").val(code);
+					//$( "#SubmitButton" ).trigger('click');
+				}
+			}
+		}
+
+
+
+	</script>
+</center>
+
+		<scriptt type="text/javascript" src="js/index.js"></scriptt>
+</body>
+</html>
