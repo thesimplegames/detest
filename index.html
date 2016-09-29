@@ -54,6 +54,7 @@
 					if (res == '404' || res == '405') {
 						//alert("404.405")
 						res = "error"; 
+						alert("Нет клиники с таким кодом");
 					} else if (callback) {
 						//alert("!");
 						//alert(res);
@@ -91,12 +92,12 @@
 		
 		function AddCookie(code) {
 			var storedArr = [];
-			if (localStorage.getItem('nclArr') == null) {
+			if (localStorage.nclArr == null) {
 				var newArr = [code];
-				localStorage.setItem('nclArr', JSON.stringify(newArr));
+				localStorage.nclArr = JSON.stringify(newArr);
 			}
 
-			storedArr = JSON.parse(localStorage.getItem('nclArr'));
+			storedArr = JSON.parse(localStorage.nclArr);
 			var containsCode = false;
 			for (var i = 0; i < storedArr.length; i++) {
 				if (storedArr[i] == code) {
@@ -108,26 +109,44 @@
 			if (!containsCode) {
 				storedArr.push(code);
 			}
-			localStorage.getItem('nclArr', JSON.stringify(storedArr));
+			localStorage.nclArr = JSON.stringify(storedArr);
+			
+		//	alert(localStorage.nclArr);
 
 			//alert(code);
 			window.open(''.concat("http://clinic.dentexpert.net/index2.php?ncl=" + code), '_blank');
+			document.location = "index.html";
 		}
 		
 		function RemoveCookie(code) {
-			var storedArr = [];
-
-			storedArr = JSON.parse(localStorage.getItem('nclArr', JSON.stringify(storedArr)));
+			var storedArr = JSON.parse(localStorage.nclArr);
+			
+			//alert(storedArr.toString());
+			
 			for (var i = 0; i < storedArr.length; i++) {
+				//alert(storedArr[i].toString() + " : code " + code.toString());
+				//alert(storedArr[i] == code);
 				if (storedArr[i] == code) {
 					storedArr.splice(i, 1);
-					localStorage.setItem('nclArr', JSON.stringify(newArr));
+					//alert(storedArr.toString());
+					localStorage.nclArr = JSON.stringify(storedArr);
+					//alert(localStorage.nclArr);
+					//alert(code);
 					break;
 				}
 			}
+			
+			alert(localStorage.nclArr);
+			
+			//alert (localStorage.nclArr);
 		}
 		
 		function BtnClick() {
+			if (navigator.connection.type == Connection.NONE) {
+				alert("Нет соединения с сетью");
+				return;
+			}
+			
 			GetClinicName($('#login').val(), function () { AddCookie($('#login').val());});
 		}
 	</script>
@@ -154,8 +173,8 @@
 	
 		var removeMode = false;
 		var storedArr = [];
-		if ($.cookie('nclArr') != null) {
-			storedArr = JSON.parse($.cookie('nclArr'));
+		if (localStorage.nclArr != null) {
+			storedArr = JSON.parse(localStorage.nclArr);
 		}
 		 
 		if (storedArr.length > 0) {
@@ -209,9 +228,9 @@
 					RemoveCookie(code);
 					$("#awayLink" + code.toString()).remove();
 					OnRemoveButtonClick();
+					location.Reload();
 				} else {
 					$("#login").val(code);
-					//$( "#SubmitButton" ).trigger('click');
 				}
 			}
 		}
