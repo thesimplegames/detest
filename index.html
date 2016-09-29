@@ -22,7 +22,7 @@
 		<script type="text/javascript" src="js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="js/jquery.cookie.js"></script>
 
-		<scriptt type="text/javascript" src="cordova.js"></scriptt>
+		<script type="text/javascript" src="cordova.js"></script>
 
 		<!--[if lte IE 9]>
 		<script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.3/jquery.xdomainrequest.min.js'></script>
@@ -48,7 +48,7 @@
 				cache		: false,
 				timeout		: 10000,
 //				headers: {'X-Requested-With': 'XMLHttpRequest'},
-				headers: {'Origin': 'http://clinic.dentexpert.net/'},
+//				headers: {'Origin': 'http://clinic.dentexpert.net/'},
 				success    : function(response) {
 					res = response;
 					if (res == '404' || res == '405') {
@@ -87,14 +87,16 @@
 			return vars;
 		}
 
+		
+		
 		function AddCookie(code) {
 			var storedArr = [];
-			if ($.cookie('nclArr') == null) {
+			if (localStorage.getItem('nclArr') == null) {
 				var newArr = [code];
-				$.cookie('nclArr', JSON.stringify(newArr));
+				localStorage.setItem('nclArr', JSON.stringify(newArr));
 			}
 
-			storedArr = JSON.parse($.cookie('nclArr'));
+			storedArr = JSON.parse(localStorage.getItem('nclArr'));
 			var containsCode = false;
 			for (var i = 0; i < storedArr.length; i++) {
 				if (storedArr[i] == code) {
@@ -106,7 +108,7 @@
 			if (!containsCode) {
 				storedArr.push(code);
 			}
-			$.cookie('nclArr', JSON.stringify(storedArr));
+			localStorage.getItem('nclArr', JSON.stringify(storedArr));
 
 			//alert(code);
 			window.open(''.concat("http://clinic.dentexpert.net/index2.php?ncl=" + code), '_blank');
@@ -115,11 +117,11 @@
 		function RemoveCookie(code) {
 			var storedArr = [];
 
-			storedArr = JSON.parse($.cookie('nclArr'));
+			storedArr = JSON.parse(localStorage.getItem('nclArr', JSON.stringify(storedArr)));
 			for (var i = 0; i < storedArr.length; i++) {
 				if (storedArr[i] == code) {
 					storedArr.splice(i, 1);
-					$.cookie('nclArr', JSON.stringify(storedArr));
+					localStorage.setItem('nclArr', JSON.stringify(newArr));
 					break;
 				}
 			}
