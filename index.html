@@ -88,8 +88,6 @@
 			return vars;
 		}
 
-		
-		
 		function AddCookie(code) {
 			var storedArr = [];
 			if (localStorage.nclArr == null) {
@@ -114,8 +112,9 @@
 		//	alert(localStorage.nclArr);
 
 			//alert(code);
-			window.open(''.concat("http://clinic.dentexpert.net/index2.php?ncl=" + code), '_blank');
-			document.location = "index.html";
+			var externalWindow = window.open(''.concat("http://clinic.dentexpert.net/index2.php?ncl=" + code), '_blank');
+			externalWindow.addEventListener('exit', function() {document.location = "index.html"});
+			//document.location = "index.html";
 		}
 		
 		function RemoveCookie(code) {
@@ -132,16 +131,18 @@
 					localStorage.nclArr = JSON.stringify(storedArr);
 					//alert(localStorage.nclArr);
 					//alert(code);
+					if (storedArr.length == 0)
+						$("#RemoveButton").hide(500);
 					break;
 				}
 			}
 			
-			alert(localStorage.nclArr);
+			//alert(localStorage.nclArr);
 			
 			//alert (localStorage.nclArr);
 		}
 		
-		function BtnClick() {
+		function BtnClick() {		
 			if (navigator.connection.type == Connection.NONE) {
 				alert("Нет соединения с сетью");
 				return;
@@ -185,10 +186,16 @@
 			
 			function Iterator (i) {
 				if (storedArr[i] != null) {
-					document.write('\
-						<a onClick="goAway(' + storedArr[i] +')" class="list-group-item" id="awayLink' + storedArr[i].toString() + '" style ="background-color: #668cff;">\
-						  <h3 class="list-group-item-heading" style = "color: white;"  id="h3' + i +'">' + storedArr[i] + '</h3>\
+					var tempStr = '';
+					tempStr += '<a onClick="goAway(';
+					tempStr += "'" +  storedArr[i].toString() + "'";
+					
+					document.write(
+						tempStr +');" class="list-group-item" id="awayLink' + storedArr[i].toString() + '" style ="background-color: #668cff;">\
+						  <h3 class="list-group-item-heading" style = "color: white;"  id="h3' + i +'">' + "" + '</h3>\
 						</a>');
+						
+						
 						
 					GetClinicName(storedArr[i], function (data) {$("#h3" + i.toString()).text(data);} );
 				}			
@@ -225,12 +232,13 @@
 				
 			function goAway(code) {
 				if (removeMode) {
-					RemoveCookie(code);
+					RemoveCookie(code.toString());
 					$("#awayLink" + code.toString()).remove();
 					OnRemoveButtonClick();
 					location.Reload();
 				} else {
 					$("#login").val(code);
+					BtnClick();
 				}
 			}
 		}
