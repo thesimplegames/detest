@@ -112,7 +112,7 @@
 		//	alert(localStorage.nclArr);
 
 			//alert(code);
-			var externalWindow = window.open(''.concat("http://clinic.dentexpert.net/index2.php?ncl=" + code), '_blank');
+			var externalWindow = window.open(''.concat("http://clinic.dentexpert.net/index2.php?ncl=" + code), '_blank', 'location=no');
 			externalWindow.addEventListener('exit', function() {document.location = "index.html"});
 			//document.location = "index.html";
 		}
